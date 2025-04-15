@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+  height: 100vh;
+  background: url('page1.jpg') no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+    .signup-box {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin: 10px 0 5px;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    p {
+      text-align: center;
+      margin-top: 20px;
+      color: #444;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-box">
+    <h2>Signup Form</h2>
+    <form id="signup-form" action="http://localhost:3000/signup" method="POST">
+      <label>Username:</label>
+      <input type="text" name="username" required placeholder="username">
+      <label>Password:</label>
+      <input type="password" name="password" required placeholder="password">
+      <input type="submit" value="Signup" onclick="window.location.href='home.html'; return false;">
+  <script>
+    // Prevent Enter key from submitting the form
+    document.getElementById('signup-form').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault(); // Prevent Enter key from submitting the form
+      }
+    });
+
+    // Optional: You can handle form submission via AJAX for better control (to avoid page reload).
+    // This is an example of handling it with fetch:
+    document.getElementById('signup-form').onsubmit = async function(e) {
+      e.preventDefault(); // Prevent default form submission
+
+      const formData = new FormData(this);
+      const data = {
+        username: formData.get('username'),
+        password: formData.get('password')
+      };
+
+      try {
+        const response = await fetch('http://localhost:3000/signup', {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          // Redirect to the home page after successful signup
+          window.location.href = 'home.html';
+        } else {
+          console.error('Signup failed!');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Sharing Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #0b1e3c; /* Dark blue background */
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.8rem; /* Bigger title */
+      color: #ffffff;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+      width: 100%;
+    }
+
+    .chat-box, .upload-box {
+      background: #1e1e1e;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+      color: #ffffff;
+    }
+
+    .chat-messages {
+      height: 200px;
+      overflow-y: auto;
+      border: 1px solid #333;
+      padding: 1rem;
+      background: #2a2a2a;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .chat-messages div {
+      margin-bottom: 0.5rem;
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input input {
+      flex-grow: 1;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: none;
+      background: #333;
+      color: #fff;
+    }
+
+    .chat-input button {
+      padding: 0.75rem 1rem;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .chat-input button:hover {
+      background: #4338ca;
+    }
+
+    .upload-form input, .upload-form textarea {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: none;
+      background: #2a2a2a;
+      color: #e0e0e0;
+    }
+
+    .upload-form input::file-selector-button {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .upload-form button {
+      padding: 0.75rem 1rem;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    .upload-form button:hover {
+      background: #4338ca;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Project Sharing & Chat Platform</h1>
+  </header>
+
+  <div class="container">
+    <div class="chat-box">
+      <h2>Live Chat</h2>
+      <div class="chat-messages" id="chat-messages">
+        <!-- messages go here -->
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chat-input" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <div class="upload-box">
+      <h2>Share Your Project</h2>
+      <form class="upload-form" id="upload-form" action="upload.html" method="get">
+        <input type="text" placeholder="Your Name" required />
+        <input type="text" placeholder="Project Title" required />
+        <textarea placeholder="Project Description" rows="4" required></textarea>
+        <input type="file" required />
+        <button type="submit">Go to Upload Page</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Function to send the chat message
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const messages = document.getElementById('chat-messages');
+      const username = "User1"; // You can modify this based on logged-in user or prompt input
+      
+      if (input.value.trim() !== '') {
+        // Send the message to the backend
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: input.value,
+            username: username
+          })
+        });
+  
+        if (response.ok) {
+          const msg = document.createElement('div');
+          msg.textContent = `${username}: ${input.value}`;
+          messages.appendChild(msg);
+          input.value = '';
+          messages.scrollTop = messages.scrollHeight;
+        } else {
+          console.error('❌ Error sending message');
+        }
+      }
+    }
+  
+    // Fetch all previous messages when the page loads
+    async function fetchMessages() {
+      const response = await fetch('/chat');
+      const chatMessages = await response.json();
+  
+      const messages = document.getElementById('chat-messages');
+      chatMessages.forEach(msg => {
+        const msgElement = document.createElement('div');
+        msgElement.textContent = `${msg.username}: ${msg.message}`;
+        messages.appendChild(msgElement);
+      });
+    }
+  
+    // Load previous messages on page load
+    window.onload = fetchMessages;
+  </script>
+  
+</body>
+</html>
